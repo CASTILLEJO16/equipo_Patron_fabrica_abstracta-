@@ -92,68 +92,111 @@ classDiagram
         +servir()
     }
     
+    %% Productos Concretos - Cocina Italiana
+    class Pizza {
+        +Pizza()
+        +servir()
+    }
+    
+    class Vino {
+        +Vino()
+        +servir()
+    }
+    
+    class Tiramisu {
+        +Tiramisu()
+        +servir()
+    }
+    
+    %% Productos Concretos - Cocina India
+    class Curry {
+        +Curry()
+        +servir()
+    }
+    
+    class Lassi {
+        +Lassi()
+        +servir()
+    }
+    
+    class GulabJamun {
+        +GulabJamun()
+        +servir()
+    }
+    
     %% Fábricas Concretas
     class FabricaRestauranteChino {
-        +crearPlatoFuerte() PlatoFuerte
-        +crearBebida() Bebida
-        +crearPostre() Postre
+        +crearPlatoFuerte() ChowMein
+        +crearBebida() TeJazmin
+        +crearPostre() RollitoDulce
     }
     
     class FabricaRestauranteJapones {
-        +crearPlatoFuerte() PlatoFuerte
-        +crearBebida() Bebida
-        +crearPostre() Postre
+        +crearPlatoFuerte() Ramen
+        +crearBebida() Sake
+        +crearPostre() Dango
     }
     
     class FabricaRestauranteMexicano {
-        +crearPlatoFuerte() PlatoFuerte
-        +crearBebida() Bebida
-        +crearPostre() Postre
+        +crearPlatoFuerte() TacosCarneAsada
+        +crearBebida() AguaJamaica
+        +crearPostre() PastelTresLeches
     }
     
-    %% Clases de Soporte
+    class FabricaRestauranteItaliano {
+        +crearPlatoFuerte() Pizza
+        +crearBebida() Vino
+        +crearPostre() Tiramisu
+    }
+    
+    class FabricaRestauranteIndio {
+        +crearPlatoFuerte() Curry
+        +crearBebida() Lassi
+        +crearPostre() GulabJamun
+    }
+    
+    %% Clase de Soporte
     class Menu {
         -PlatoFuerte platoFuerte
         -Bebida bebida
         -Postre postre
-        +Menu(plato, bebida, postre)
+        +Menu(platoFuerte, bebida, postre)
         +servirMenu()
-        +getPlatoFuerte() PlatoFuerte
-        +getBebida() Bebida
-        +getPostre() Postre
+        +getInfo() Object
     }
     
+    %% Cliente
     class Cliente {
-        +main(String[] args)
+        -FabricaRestaurante fabrica
+        +iniciar()
         +probarDiferentesFabricas()
     }
     
-    %% Herencia de Productos
+    %% Relaciones de Herencia
     ChowMein --|> PlatoFuerte
     Ramen --|> PlatoFuerte
     TacosCarneAsada --|> PlatoFuerte
+    Pizza --|> PlatoFuerte
+    Curry --|> PlatoFuerte
     
     TeJazmin --|> Bebida
     Sake --|> Bebida
     AguaJamaica --|> Bebida
+    Vino --|> Bebida
+    Lassi --|> Bebida
     
     RollitoDulce --|> Postre
     Dango --|> Postre
     PastelTresLeches --|> Postre
+    Tiramisu --|> Postre
+    GulabJamun --|> Postre
     
-    %% Herencia de Fábricas
+    %% Relaciones de Herencia de Fábricas
     FabricaRestauranteChino --|> FabricaRestaurante
     FabricaRestauranteJapones --|> FabricaRestaurante
     FabricaRestauranteMexicano --|> FabricaRestaurante
-    
-    %% Dependencias
-    FabricaRestaurante ..> PlatoFuerte : crea
-    FabricaRestaurante ..> Bebida : crea
-    FabricaRestaurante ..> Postre : crea
-    FabricaRestaurante ..> Menu : utiliza
-    
-    Cliente ..> FabricaRestaurante : depende
-    Cliente ..> Menu : utiliza
+    FabricaRestauranteItaliano --|> FabricaRestaurante
+    FabricaRestauranteIndio --|> FabricaRestaurante
     
     %% Relaciones de Creación
     FabricaRestauranteChino --> ChowMein : crea
@@ -168,46 +211,133 @@ classDiagram
     FabricaRestauranteMexicano --> AguaJamaica : crea
     FabricaRestauranteMexicano --> PastelTresLeches : crea
     
+    FabricaRestauranteItaliano --> Pizza : crea
+    FabricaRestauranteItaliano --> Vino : crea
+    FabricaRestauranteItaliano --> Tiramisu : crea
+    
+    FabricaRestauranteIndio --> Curry : crea
+    FabricaRestauranteIndio --> Lassi : crea
+    FabricaRestauranteIndio --> GulabJamun : crea
+    
     %% Composición del Menu
     Menu *-- PlatoFuerte : contiene
     Menu *-- Bebida : contiene
     Menu *-- Postre : contiene
+    
+    %% Cliente usa Fábrica
+    Cliente ..> FabricaRestaurante : utiliza
 ```
 
 ## Explicación del Diagrama
 
-### Componentes del Patrón
+### Componentes del Patrón Abstract Factory
 
-1. **Productos Abstractos** (`PlatoFuerte`, `Bebida`, `Postre`)
-   - Definen la interfaz común para todos los productos de cada tipo
-   - No contienen implementación específica
+#### 1. Productos Abstractos (Abstract Products)
+- **PlatoFuerte**: Define la interfaz para todos los platos principales
+- **Bebida**: Define la interfaz para todas las bebidas
+- **Postre**: Define la interfaz para todos los postres
 
-2. **Productos Concretos**
-   - Implementaciones específicas para cada cocina
-   - Ej: `ChowMein`, `Ramen`, `TacosCarneAsada` heredan de `PlatoFuerte`
+#### 2. Productos Concretos (Concrete Products)
+- **Cocina China**: ChowMein, TeJazmin, RollitoDulce
+- **Cocina Japonesa**: Ramen, Sake, Dango
+- **Cocina Mexicana**: TacosCarneAsada, AguaJamaica, PastelTresLeches
+- **Cocina Italiana**: Pizza, Vino, Tiramisu
+- **Cocina India**: Curry, Lassi, GulabJamun
 
-3. **Fábrica Abstracta** (`FabricaRestaurante`)
-   - Define métodos para crear cada tipo de producto
-   - No especifica qué productos concretos crear
+#### 3. Fábrica Abstracta (Abstract Factory)
+- **FabricaRestaurante**: Define la interfaz para crear familias de productos
 
-4. **Fábricas Concretas**
-   - Implementan los métodos de la fábrica abstracta
-   - Cada fábrica crea productos de una sola cocina
-   - Ej: `FabricaRestauranteChino` solo crea productos chinos
+#### 4. Fábricas Concretas (Concrete Factories)
+- **FabricaRestauranteChino**: Crea productos chinos
+- **FabricaRestauranteJapones**: Crea productos japoneses
+- **FabricaRestauranteMexicano**: Crea productos mexicanos
+- **FabricaRestauranteItaliano**: Crea productos italianos
+- **FabricaRestauranteIndio**: Crea productos indios
 
-5. **Cliente** (`Cliente`)
-   - Trabaja con interfaces abstractas
-   - No conoce los detalles de las implementaciones concretas
+#### 5. Clases de Soporte
+- **Menu**: Contiene y gestiona un conjunto completo de productos
+- **Cliente**: Utiliza las fábricas para crear menús
 
-### Flujo del Patrón
+### Flujo de Interacción
 
-1. El cliente solicita una fábrica específica
-2. La fábrica crea productos compatibles entre sí
-3. El cliente recibe y utiliza los productos sin conocer su tipo concreto
+1. **Cliente** solicita una fábrica específica
+2. **Fábrica Concreta** crea los productos correspondientes
+3. **Menu** agrupa los productos relacionados
+4. **Cliente** utiliza el menú sin conocer detalles de implementación
 
-### Ventajas del Diseño
+### Beneficios del Patrón
 
-- **Encapsulación**: El cliente no necesita conocer las clases concretas
-- **Consistencia**: Los productos creados por una fábrica son compatibles
-- **Extensibilidad**: Fácil agregar nuevas cocinas sin modificar el cliente
-- **Desacoplamiento**: Reducción de dependencias entre componentes
+#### Ventajas:
+- **Desacoplamiento**: Cliente no depende de clases concretas
+- **Consistencia**: Productos de la misma familia son compatibles
+- **Flexibilidad**: Fácil agregar nuevas cocinas
+- **Mantenimiento**: Cambios localizados
+
+#### Extensibilidad:
+- Para agregar una nueva cocina: solo se necesitan nuevos productos y una nueva fábrica
+- El código del cliente permanece sin cambios
+- Las cocinas existentes no se afectan
+
+### Estadísticas del Sistema
+
+| Elemento | Cantidad |
+|----------|----------|
+| Productos Abstractos | 3 |
+| Productos Concretos | 15 |
+| Fábricas Abstractas | 1 |
+| Fábricas Concretas | 5 |
+| Cocinas Implementadas | 5 |
+
+### Cocinas Disponibles
+
+#### Cocina China
+- Chow Mein
+- Té Jazmín
+- Rollito Dulce
+
+#### Cocina Japonesa
+- Ramen
+- Sake
+- Dango
+
+#### Cocina Mexicana
+- Tacos de Carne Asada
+- Agua de Jamaica
+- Pastel de Tres Leches
+
+#### Cocina Italiana
+- Pizza Margherita
+- Vino Tinto Chianti
+- Tiramisú
+
+#### Cocina India
+- Chicken Curry
+- Lassi de Mango
+- Gulab Jamun
+
+### Implementación Dual
+
+El patrón está implementado en dos plataformas:
+
+#### Backend JavaScript
+- Clases ES6 con herencia
+- Interacción por consola
+- Demostración pura del patrón
+
+#### Frontend React
+- Componentes React modernos
+- Interfaz visual interactiva
+- Material-UI y animaciones
+
+### Notación UML Utilizada
+
+- `<<abstract>>`: Clases abstractas
+- `*`: Métodos abstractos
+- `--|>`: Herencia
+- `-->`: Dependencia/creación
+- `*--`: Composición
+- `..>`: Uso
+
+---
+
+**Este diagrama muestra la implementación completa del patrón Abstract Factory con 5 cocinas diferentes, demostrando la flexibilidad y escalabilidad del patrón de diseño.**
